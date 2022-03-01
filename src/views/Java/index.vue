@@ -1,11 +1,13 @@
 <template>
-  <div>HOME</div>
+  <div>JAVA</div>
 </template>
 
 <script>
-
 export default {
-  name: 'Home',
-  components: {}
+  name: 'Java'
 }
 </script>
+
+<style scoped>
+
+</style>
