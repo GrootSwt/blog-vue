@@ -1,10 +1,13 @@
 <template>
-  <div>JAVA</div>
+  <mark-down></mark-down>
 </template>
 
 <script>
+import MarkDown from '@/components/MarkDown'
+
 export default {
-  name: 'Java'
+  name: 'Java',
+  components: { MarkDown }
 }
 </script>
 

@@ -54,7 +54,7 @@ export default {
 
 .el-container {
   background: #f6f6f6;
-  min-height: 100%;
+  height: 100%;
 
   .el-header {
     background: #303030;
