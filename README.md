@@ -1,4 +1,4 @@
-# blog-vue3
+# groot-blog-vue
 
 ## Project setup
 ```
