@@ -1,45 +1,74 @@
 <template>
   <div class="blog-mark-down">
-    <div class="blog-operation">
-      <div>
-        <el-button>创建同级文件夹</el-button>
-        <el-button v-show="currentNode.type === '1'">创建子级文件夹</el-button>
-        <el-button>创建同级文件</el-button>
-        <el-button v-show="currentNode.type === '1'">创建子级文件</el-button>
-        <el-button>删除</el-button>
-      </div>
-      <div>
-        <el-button v-show="currentNode.type === '2'" @click="save(true)">保存草稿</el-button>
-        <el-button v-show="currentNode.type === '2'" @click="save(false)">保存</el-button>
-      </div>
-    </div>
-    <el-row :gutter="20" class="blog-mark-down-box">
-      <el-col :span="6">
-        <div class="blog-list">
-          <el-tree
-            :data="treeList"
-            :props="treeProps"
-            @node-click="handleNodeClick"
-          >
-            <template #default="{ node,data }">
-              <el-icon :size="20">
-                <folder v-if="data.type === '1'"/>
-                <document v-else/>
-              </el-icon>
-              &nbsp;
-              <span>{{ node.label }}</span>
-            </template>
-          </el-tree>
-        </div>
-      </el-col>
-      <el-col :span="18">
-        <md-editor
-          editor-class="editor-class"
-          v-model="text"
+    <el-button
+      class="folder-btn"
+      @click="blogTreeVisible = true"
+      circle
+      type="info"
+    >
+      <el-icon>
+        <folder-opened/>
+      </el-icon>
+    </el-button>
+    <!--抽屉文件列表-->
+    <el-drawer
+      v-model="blogTreeVisible"
+      direction="ltr"
+      custom-class="blog-drawer"
+      :size="drawerWidth"
+    >
+      <template #title>
+        <el-dropdown>
+          <span class="el-dropdown-link" v-show="isBlogMenuShow">
+            <el-icon :size="20"><circle-plus/></el-icon>
+            &nbsp;
+            <span>新建到此处</span>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>同级文档</el-dropdown-item>
+              <el-dropdown-item>同级文件夹</el-dropdown-item>
+              <el-dropdown-item>子级文档</el-dropdown-item>
+              <el-dropdown-item>子级文件夹</el-dropdown-item>
+              <el-dropdown-item>删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
+      <template #default>
+        <el-tree
+          :data="treeList"
+          :props="treeProps"
+          @node-click="handleNodeClick"
         >
-        </md-editor>
-      </el-col>
-    </el-row>
+          <template #default="{ node,data }">
+            <el-icon :size="20">
+              <folder v-if="data.type === '1'"/>
+              <document v-else/>
+            </el-icon>
+            &nbsp;
+            <span>{{ node.label }}</span>
+          </template>
+        </el-tree>
+      </template>
+    </el-drawer>
+    <!--markdown编辑器-->
+    <template v-if="previewOnly">
+      <md-editor
+        editor-class="editor-class"
+        v-model="text"
+        :previewOnly="true"
+      >
+      </md-editor>
+    </template>
+    <template v-else>
+      <md-editor
+        editor-class="editor-class"
+        v-model="text"
+        @on-save="saveFile"
+      >
+      </md-editor>
+    </template>
   </div>
 </template>
 
@@ -47,7 +76,7 @@
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { reactive, ref, toRefs, watch } from 'vue'
-import { Folder, Document } from '@element-plus/icons-vue'
+import { Folder, Document, CirclePlus, FolderOpened } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 export default {
@@ -55,14 +84,40 @@ export default {
   components: {
     MdEditor,
     Folder,
-    Document
+    Document,
+    CirclePlus,
+    FolderOpened
   },
   props: {
     treeList: Array,
     fileData: Object
   },
   setup (props, { emit }) {
+    // 监听屏幕宽度变化
+    window.onresize = () => {
+      const clientWidth = document.body.clientWidth
+      if (clientWidth <= 800) {
+        drawerWidth.value = '100%'
+        isBlogMenuShow.value = false
+        previewOnly.value = true
+      } else {
+        drawerWidth.value = '30%'
+        isBlogMenuShow.value = true
+        previewOnly.value = false
+      }
+    }
+    const clientWidth = document.body.clientWidth
+    // 文档目录抽屉是否展示
+    const blogTreeVisible = ref(false)
+    // 文档目录抽屉宽度
+    const drawerWidth = ref(clientWidth <= 800 ? '100%' : '30%')
+    // 是否展示文档目录操作按钮
+    const isBlogMenuShow = ref(clientWidth > 800)
+    // 是否预览模式
+    const previewOnly = ref(clientWidth <= 800)
+    // 当前markdown文件数据
     const { fileData } = toRefs(props)
+    // 当markdown文件数据改变时，获取文档内容
     watch(fileData, (newValue) => {
       oldText.value = newValue.text
       text.value = newValue.text
@@ -92,9 +147,13 @@ export default {
       }
     }
     // 保存文章内容
-    const save = (isDraft) => {
-      emit('saveFile', text, currentNode.value.id, isDraft)
-      clearText()
+    const save = () => {
+      emit('saveFile', text)
+    }
+    // 点击保存按钮或者快捷键保存
+    const saveFile = () => {
+      save()
+      oldText.value = text.value
     }
     // 清空编辑器内容
     const clearText = () => {
@@ -110,75 +169,74 @@ export default {
       } else {
         // TODO 获取文章内容
         emit('getFileData', currentNode.value.id)
+        blogTreeVisible.value = false
       }
     }
-
+    // 打开文件是否需要保存提示框
     const open = (data) => {
       ElMessageBox.confirm(
         '当前文章已更改，是否保存？',
-        'Warning',
+        '提示',
         {
           confirmButtonText: '保存',
           cancelButtonText: '取消',
           type: 'warning'
         }
-      )
-        .then(() => {
-          // TODO 保存文章内容
-          save(true)
-          ElMessage({
-            type: 'success',
-            message: '保存成功！'
-          })
+      ).then(() => {
+        save()
+        ElMessage({
+          type: 'success',
+          message: '保存成功！'
         })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '已取消保存！'
-          })
+        changeOtherNode(data)
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消保存！'
         })
+        changeOtherNode(data)
+      })
     }
     return {
       currentNode,
       treeProps,
       handleNodeClick,
       save,
-      text
+      saveFile,
+      blogTreeVisible,
+      isBlogMenuShow,
+      drawerWidth,
+      text,
+      previewOnly
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-@operationHeight: 60px;
-@blogMargin: 10px;
-@blogPadding: 10px;
-
 .blog-mark-down {
-  height: calc(100% - @blogMargin);
-  margin: 0 10px 10px;
+  height: 100%;
 
-  .blog-operation {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: @operationHeight;
+  .folder-btn {
+    position: absolute;
+    right: 10px;
+    top: 25%;
+    z-index: 2023;
   }
 
-  .blog-mark-down-box {
-    height: calc(100% - @operationHeight);
+  .el-drawer__header {
+    margin-bottom: 0;
+  }
 
-    .blog-list {
-      background: #ffffff;
-      height: calc(100% - 2 * @blogPadding);
-      border: 1px solid #e6e6e6;
-      padding: @blogPadding;
-    }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: var(--el-color-primary);
+    display: flex;
+    align-items: center;
+  }
 
-    .editor-class {
-      height: 100%;
-    }
+  .editor-class {
+    height: 100%;
   }
 }
 

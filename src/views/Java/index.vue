@@ -19,8 +19,7 @@ export default {
     const fileData = ref({
       id: '',
       fileId: '',
-      text: '',
-      isDraft: false
+      text: ''
     })
     data.value = [
       {
@@ -48,19 +47,16 @@ export default {
       {
         id: '1',
         fileId: '2',
-        text: '222',
-        isDraft: false
+        text: '### 333'
       },
       {
         id: '2',
         fileId: '3',
-        text: '333',
-        isDraft: false
+        text: '### 444444'
       }
     ]
-    const saveFile = (text, fileId, isDraft) => {
+    const saveFile = (text) => {
       fileData.value.text = text.value
-      fileData.value.isDraft = isDraft
     }
 
     const getFileData = (id) => {
