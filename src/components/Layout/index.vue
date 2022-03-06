@@ -53,11 +53,10 @@ export default {
 <style scoped lang="less">
 
 .el-container {
-  background: #f6f6f6;
   height: 100%;
 
   .el-header {
-    background: #303030;
+    background: #000000;
     padding: 0;
   }
 

@@ -55,6 +55,7 @@
     <!--markdown编辑器-->
     <template v-if="previewOnly">
       <md-editor
+        theme="dark"
         editor-class="editor-class"
         v-model="text"
         :previewOnly="true"
@@ -63,6 +64,7 @@
     </template>
     <template v-else>
       <md-editor
+        theme="dark"
         editor-class="editor-class"
         v-model="text"
         @on-save="saveFile"
@@ -214,9 +216,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// 整个markdown编辑器样式
 .blog-mark-down {
   height: 100%;
-
+  // 抽屉展开按钮样式
   .folder-btn {
     position: absolute;
     right: 10px;
@@ -224,17 +227,23 @@ export default {
     z-index: 2023;
   }
 
+  // 抽屉样式
+  .blog-drawer {
+    background-color: #000000;
+    color: #999;
+  }
+  // 抽屉头样式
   .el-drawer__header {
     margin-bottom: 0;
   }
-
+  // 下拉菜单样式
   .el-dropdown-link {
     cursor: pointer;
     color: var(--el-color-primary);
     display: flex;
     align-items: center;
   }
-
+  // markdown编辑器样式
   .editor-class {
     height: 100%;
   }

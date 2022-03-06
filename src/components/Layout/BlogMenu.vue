@@ -35,6 +35,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+// 菜单列表
 .blog-menu-list {
   display: flex;
   flex-direction: row;
@@ -43,17 +44,14 @@ export default {
   width: 50%;
   height: 100%;
   margin-left: 25%;
-
+  // 菜单项
   .blog-menu-item {
-    color: #ffffff;
+    color: #999;
     transition: color 0.2s;
     font-size: 18px;
   }
-
-  .blog-menu-item:hover {
-    color: #909399;
-  }
 }
+
 // 屏幕宽度变小后，去掉margin
 @media screen and (max-width: 800px) {
   .blog-menu-list {
