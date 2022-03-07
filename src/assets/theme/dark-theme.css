@@ -1,0 +1,6 @@
+/* 黑色主题 */
+:root {
+    --blog-dark-background-color: #24292f;
+    --blog-dark-font-color: rgba(255, 255, 255, 0.7);
+}
+

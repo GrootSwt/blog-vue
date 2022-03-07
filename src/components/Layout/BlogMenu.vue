@@ -46,7 +46,7 @@ export default {
   margin-left: 25%;
   // 菜单项
   .blog-menu-item {
-    color: #999;
+    color: var(--blog-dark-font-color);
     transition: color 0.2s;
     font-size: 18px;
   }

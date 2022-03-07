@@ -2,7 +2,7 @@
   <div class="blog-mark-down">
     <el-button
       class="folder-btn"
-      @click="blogTreeVisible = true"
+      @click="blogTreeVisible = !blogTreeVisible"
       circle
       type="info"
     >
@@ -14,7 +14,6 @@
     <el-drawer
       v-model="blogTreeVisible"
       direction="ltr"
-      custom-class="blog-drawer"
       :size="drawerWidth"
     >
       <template #title>
@@ -56,7 +55,6 @@
     <template v-if="previewOnly">
       <md-editor
         theme="dark"
-        editor-class="editor-class"
         v-model="text"
         :previewOnly="true"
       >
@@ -228,25 +226,51 @@ export default {
   }
 
   // 抽屉样式
-  .blog-drawer {
-    background-color: #000000;
-    color: #999;
+  :deep(.el-drawer) {
+    background-color: var(--blog-dark-background-color);
+    color: var(--blog-dark-font-color);
   }
+
   // 抽屉头样式
-  .el-drawer__header {
+  :deep(.el-drawer__header) {
     margin-bottom: 0;
-  }
-  // 下拉菜单样式
-  .el-dropdown-link {
-    cursor: pointer;
-    color: var(--el-color-primary);
     display: flex;
     align-items: center;
   }
+
+  // 下拉菜单样式
+  .el-dropdown-link {
+    cursor: pointer;
+    color: var(--blog-dark-font-color);
+    display: flex;
+    align-items: center;
+  }
+
+  // 目录下拉操作菜单
+  .el-dropdown-menu {
+    background-color: var(--blog-dark-background-color);
+    border: none;
+  }
+
+  // 目录下拉项
+  .el-dropdown-menu__item {
+    color: var(--blog-dark-font-color);
+  }
+
+  // 树形目录
+  .el-tree {
+    background: var(--blog-dark-background-color);
+    color: var(--blog-dark-font-color);
+    --el-tree-node-hover-bg-color: var(--blog-dark-font-color);
+    --el-tree-text-color: var(--blog-dark-font-color);
+    --el-tree-expand-icon-color: var(--blog-dark-font-color);
+  }
+
   // markdown编辑器样式
-  .editor-class {
+  .md-dark {
     height: 100%;
+    background-color: var(--blog-dark-background-color);
+    color: var(--blog-dark-font-color);
   }
 }
-
 </style>
