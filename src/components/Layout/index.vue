@@ -56,12 +56,15 @@ export default {
   height: 100%;
 
   .el-header {
-    background-color: #24292f;
+    background-color: var(--blog-dark-background-color);
+    color: var(--blog-dark-font-color);
     padding: 0;
   }
 
   .el-main {
     padding: 0;
+    background-color: var(--blog-dark-background-color);
+    color: var(--blog-dark-font-color);
   }
 }
 </style>
