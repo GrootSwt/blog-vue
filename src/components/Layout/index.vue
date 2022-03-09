@@ -19,6 +19,10 @@ export default {
   setup () {
     const menuList = reactive([
       {
+        name: 'Home',
+        path: '/home'
+      },
+      {
         name: 'Java',
         path: '/java'
       },
@@ -56,15 +60,13 @@ export default {
   height: 100%;
 
   .el-header {
-    background-color: var(--blog-dark-background-color);
-    color: var(--blog-dark-font-color);
+    background-color: var(--blog-header-bg-color);
     padding: 0;
   }
 
   .el-main {
     padding: 0;
-    background-color: var(--blog-dark-background-color);
-    color: var(--blog-dark-font-color);
+    background-color: var(--blog-main-bg-color);
   }
 }
 </style>

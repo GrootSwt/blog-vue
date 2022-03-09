@@ -7,12 +7,12 @@ import { ref } from 'vue'
 import BlogContent from '@/components/BlogContent'
 
 export default {
-  name: 'Java',
+  name: 'CSS',
   components: {
     BlogContent
   },
   setup () {
-    const category = ref('Java')
+    const category = ref('CSS')
     return {
       category
     }

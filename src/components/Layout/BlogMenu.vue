@@ -2,6 +2,7 @@
   <div class="blog-menu-list">
     <el-link
       class="blog-menu-item"
+      :class="{'active-item' : activePath === menu.path}"
       :underline="false"
       v-for="menu in menuList"
       :key="menu.name"
@@ -13,7 +14,8 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 
 export default {
   name: 'BlogMenu',
@@ -23,12 +25,20 @@ export default {
     }
   },
   setup () {
+    // 当前路由显示
+    const activePath = ref('')
+    const $route = useRoute()
+    watch($route, (v) => {
+      activePath.value = v.fullPath
+    })
+    // 路由跳转
     const router = useRouter()
     const toMenuPage = (path) => {
       router.push({ path })
     }
     return {
-      toMenuPage
+      toMenuPage,
+      activePath
     }
   }
 }
@@ -46,9 +56,17 @@ export default {
   margin-left: 25%;
   // 菜单项
   .blog-menu-item {
-    color: var(--blog-dark-font-color);
+    color: var(--blog-menu-item);
     transition: color 0.2s;
     font-size: 18px;
+  }
+
+  .blog-menu-item:hover {
+    color: var(--blog-menu-item-hover);
+  }
+
+  .active-item {
+    color: var(--blog-menu-item-hover);
   }
 }
 

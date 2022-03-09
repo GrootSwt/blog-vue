@@ -25,11 +25,10 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>同级文档</el-dropdown-item>
-              <el-dropdown-item>同级文件夹</el-dropdown-item>
-              <el-dropdown-item>子级文档</el-dropdown-item>
-              <el-dropdown-item>子级文件夹</el-dropdown-item>
-              <el-dropdown-item>删除</el-dropdown-item>
+              <el-dropdown-item @click="createCatalogue('1')">同级文档</el-dropdown-item>
+              <el-dropdown-item @click="createCatalogue('2')">同级文件夹</el-dropdown-item>
+              <el-dropdown-item @click="createCatalogue('3')" v-if="currentNode.type ==='1'">子级文档</el-dropdown-item>
+              <el-dropdown-item @click="createCatalogue('4')" v-if="currentNode.type ==='1'">子级文件夹</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -38,6 +37,7 @@
         <el-tree
           :data="treeList"
           :props="treeProps"
+          highlight-current
           @node-click="handleNodeClick"
         >
           <template #default="{ node,data }">
@@ -51,24 +51,46 @@
         </el-tree>
       </template>
     </el-drawer>
+    <!--markdown编辑器只查看-->
+    <md-editor
+      v-if="previewOnly"
+      theme="dark"
+      v-model="text"
+      :previewOnly="true"
+    >
+    </md-editor>
     <!--markdown编辑器-->
-    <template v-if="previewOnly">
-      <md-editor
-        theme="dark"
-        v-model="text"
-        :previewOnly="true"
+    <md-editor
+      v-else
+      v-model="text"
+      @on-save="saveFile"
+    >
+    </md-editor>
+    <!--创建新目录-->
+    <el-dialog
+      v-model="createCatalogueFlag"
+      title="新建目录"
+      width="30%"
+      :before-close="cancelCreateCatalogue"
+    >
+      <el-form
+        ref="catalogueFormRef"
+        :model="catalogue"
+        :rules="catalogueRules"
       >
-      </md-editor>
-    </template>
-    <template v-else>
-      <md-editor
-        theme="dark"
-        editor-class="editor-class"
-        v-model="text"
-        @on-save="saveFile"
-      >
-      </md-editor>
-    </template>
+        <el-form-item label="目录名称" prop="name">
+          <el-input v-model="catalogue.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="cancelCreateCatalogue">取消</el-button>
+        <el-button type="primary" @click="submitCreateCatalogue">
+          创建
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -90,7 +112,8 @@ export default {
   },
   props: {
     treeList: Array,
-    fileData: Object
+    fileData: Object,
+    category: String
   },
   setup (props, { emit }) {
     // 监听屏幕宽度变化
@@ -116,11 +139,14 @@ export default {
     // 是否预览模式
     const previewOnly = ref(clientWidth <= 800)
     // 当前markdown文件数据
-    const { fileData } = toRefs(props)
+    const {
+      fileData,
+      category
+    } = toRefs(props)
     // 当markdown文件数据改变时，获取文档内容
     watch(fileData, (newValue) => {
-      oldText.value = newValue.text
-      text.value = newValue.text
+      oldText.value = newValue.text ? newValue.text : ''
+      text.value = newValue.text ? newValue.text : ''
     })
     // 树形结构配置项
     const treeProps = reactive({
@@ -148,7 +174,7 @@ export default {
     }
     // 保存文章内容
     const save = () => {
-      emit('saveFile', text)
+      emit('saveFile', text.value)
     }
     // 点击保存按钮或者快捷键保存
     const saveFile = () => {
@@ -167,9 +193,7 @@ export default {
       if (currentNode.value.type === '1') {
         clearText()
       } else {
-        // TODO 获取文章内容
         emit('getFileData', currentNode.value.id)
-        blogTreeVisible.value = false
       }
     }
     // 打开文件是否需要保存提示框
@@ -197,6 +221,77 @@ export default {
         changeOtherNode(data)
       })
     }
+    // 新建目录
+    const catalogue = ref({
+      type: '',
+      parentId: '',
+      name: ''
+    })
+    const catalogueRules = ref({
+      name: [
+        {
+          required: true,
+          message: '请输入目录名称！',
+          trigger: 'blur'
+        },
+        {
+          min: 3,
+          max: 20,
+          message: '目录名称字符长度在3-20之间！',
+          trigger: 'blur'
+        }
+      ]
+    })
+    // 新建目录对话框标志位
+    const createCatalogueFlag = ref(false)
+    // 打开新建目录对话框
+    const createCatalogue = (createType) => {
+      const { parentId: currentParentId } = currentNode.value
+      const { id: currentId } = currentNode.value
+      switch (createType) {
+        // 同级文档
+        case '1':
+          catalogue.value.parentId = currentParentId || '-1'
+          catalogue.value.type = '2'
+          break
+        // 同级文件夹
+        case '2':
+          catalogue.value.parentId = currentParentId || '-1'
+          catalogue.value.type = '1'
+          break
+        // 子级文档
+        case '3':
+          catalogue.value.parentId = currentId || '-1'
+          catalogue.value.type = '2'
+          break
+        // 子级文件夹
+        case '4':
+          catalogue.value.parentId = currentId || '-1'
+          catalogue.value.type = '1'
+          break
+      }
+      createCatalogueFlag.value = true
+    }
+    const cancelCreateCatalogue = () => {
+      catalogue.value.parentId = ''
+      catalogue.value.type = ''
+      catalogue.value.name = ''
+      createCatalogueFlag.value = false
+    }
+    // TODO 提交表单和表单校验
+    const catalogueFormRef = ref(null)
+    const submitCreateCatalogue = () => {
+      catalogueFormRef.value.validate(valid => {
+        if (!valid) {
+          ElMessage.warning('请根据表单提示完善表单！')
+        } else {
+          emit('create', {
+            category: category.value,
+            ...catalogue.value
+          })
+        }
+      })
+    }
     return {
       currentNode,
       treeProps,
@@ -207,7 +302,14 @@ export default {
       isBlogMenuShow,
       drawerWidth,
       text,
-      previewOnly
+      previewOnly,
+      createCatalogue,
+      createCatalogueFlag,
+      catalogue,
+      catalogueRules,
+      cancelCreateCatalogue,
+      submitCreateCatalogue,
+      catalogueFormRef
     }
   }
 }
@@ -224,53 +326,19 @@ export default {
     top: 25%;
     z-index: 2023;
   }
-
-  // 抽屉样式
-  :deep(.el-drawer) {
-    background-color: var(--blog-dark-background-color);
-    color: var(--blog-dark-font-color);
-  }
-
-  // 抽屉头样式
-  :deep(.el-drawer__header) {
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-  }
-
   // 下拉菜单样式
   .el-dropdown-link {
-    cursor: pointer;
-    color: var(--blog-dark-font-color);
     display: flex;
     align-items: center;
-  }
-
-  // 目录下拉操作菜单
-  .el-dropdown-menu {
-    background-color: var(--blog-dark-background-color);
-    border: none;
-  }
-
-  // 目录下拉项
-  .el-dropdown-menu__item {
-    color: var(--blog-dark-font-color);
-  }
-
-  // 树形目录
-  .el-tree {
-    background: var(--blog-dark-background-color);
-    color: var(--blog-dark-font-color);
-    --el-tree-node-hover-bg-color: var(--blog-dark-font-color);
-    --el-tree-text-color: var(--blog-dark-font-color);
-    --el-tree-expand-icon-color: var(--blog-dark-font-color);
   }
 
   // markdown编辑器样式
   .md-dark {
     height: 100%;
-    background-color: var(--blog-dark-background-color);
-    color: var(--blog-dark-font-color);
+  }
+
+  .md {
+    height: 100%;
   }
 }
 </style>

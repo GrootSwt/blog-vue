@@ -1,0 +1,11 @@
+/* 白色主题 */
+:root {
+    --blog-header-bg-color: #24292f;
+    --blog-main-bg-color: #f3f3f3;
+    --blog-bg-color: #24292f;
+    --blog-color: #f3f3f3;
+    --blog-menu-item: #f3f3f3;
+    --blog-menu-item-active: #47b884;
+    --blog-menu-item-hover: #47b884;
+}
+

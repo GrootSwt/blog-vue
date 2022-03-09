@@ -16,6 +16,31 @@ const routes = [
         path: '/java',
         name: 'Java',
         component: () => import('../views/Java')
+      },
+      {
+        path: '/java-script',
+        name: 'JavaScript',
+        component: () => import('../views/JavaScript')
+      },
+      {
+        path: '/spring',
+        name: 'Spring',
+        component: () => import('../views/Spring')
+      },
+      {
+        path: '/html',
+        name: 'HTML',
+        component: () => import('../views/HTML')
+      },
+      {
+        path: '/css',
+        name: 'CSS',
+        component: () => import('../views/CSS')
+      },
+      {
+        path: '/vue',
+        name: 'VUE',
+        component: () => import('../views/VUE')
       }
     ]
   }
