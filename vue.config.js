@@ -1,4 +1,13 @@
 module.exports = {
+  configureWebpack: {
+    externals: {
+      vue: 'Vue',
+      'vue-router': 'VueRouter',
+      vuex: 'Vuex',
+      'element-plus': 'ElementPlus',
+      axios: 'axios'
+    }
+  },
   devServer: {
     proxy: {
       '/api': {
