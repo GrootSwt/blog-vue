@@ -1,5 +1,6 @@
 <template>
   <div class="blog-mark-down">
+    <!--菜单打开关闭按钮-->
     <el-button
       class="folder-btn"
       @click="blogTreeVisible = !blogTreeVisible"
@@ -17,21 +18,25 @@
       :size="drawerWidth"
     >
       <template #title>
-        <el-dropdown>
-          <span class="el-dropdown-link" v-show="isBlogMenuShow">
+        <div class="operation-list" v-show="isBlogMenuShow">
+          <el-dropdown>
+          <span class="el-dropdown-link">
             <el-icon :size="20"><circle-plus/></el-icon>
             &nbsp;
             <span>新建到此处</span>
           </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="createCatalogue('1')">同级文档</el-dropdown-item>
-              <el-dropdown-item @click="createCatalogue('2')">同级文件夹</el-dropdown-item>
-              <el-dropdown-item @click="createCatalogue('3')" v-if="currentNode.type ==='1'">子级文档</el-dropdown-item>
-              <el-dropdown-item @click="createCatalogue('4')" v-if="currentNode.type ==='1'">子级文件夹</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="createCatalogue('1')">同级文档</el-dropdown-item>
+                <el-dropdown-item @click="createCatalogue('2')">同级文件夹</el-dropdown-item>
+                <el-dropdown-item @click="createCatalogue('3')" v-if="currentNode.type ==='1'">子级文档</el-dropdown-item>
+                <el-dropdown-item @click="createCatalogue('4')" v-if="currentNode.type ==='1'">子级文件夹</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-button type="danger" size="small" :icon="deleteIcon" circle @click="deleteByNodeId">
+          </el-button>
+        </div>
       </template>
       <template #default>
         <el-tree
@@ -98,12 +103,13 @@
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { reactive, ref, toRefs, watch } from 'vue'
-import { Folder, Document, CirclePlus, FolderOpened } from '@element-plus/icons-vue'
+import { Folder, Document, CirclePlus, FolderOpened, Delete } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 export default {
   name: 'index',
   components: {
+    // markdown编辑器
     MdEditor,
     Folder,
     Document,
@@ -111,24 +117,15 @@ export default {
     FolderOpened
   },
   props: {
+    // 目录
     treeList: Array,
+    // 文档内容
     fileData: Object,
+    // 文档类别（Java等）
     category: String
   },
   setup (props, { emit }) {
-    // 监听屏幕宽度变化
-    window.onresize = () => {
-      const clientWidth = document.body.clientWidth
-      if (clientWidth <= 800) {
-        drawerWidth.value = '100%'
-        isBlogMenuShow.value = false
-        previewOnly.value = true
-      } else {
-        drawerWidth.value = '30%'
-        isBlogMenuShow.value = true
-        previewOnly.value = false
-      }
-    }
+    // 当前屏幕宽度
     const clientWidth = document.body.clientWidth
     // 文档目录抽屉是否展示
     const blogTreeVisible = ref(false)
@@ -138,37 +135,63 @@ export default {
     const isBlogMenuShow = ref(clientWidth > 800)
     // 是否预览模式
     const previewOnly = ref(clientWidth <= 800)
-    // 当前markdown文件数据
+    // 监听屏幕宽度变化
+    window.onresize = () => {
+      const clientWidth = document.body.clientWidth
+      // 屏幕宽度小于800px
+      if (clientWidth <= 800) {
+        // 目录抽屉宽度为屏幕宽度
+        drawerWidth.value = '100%'
+        // 不展示目录操作列表
+        isBlogMenuShow.value = false
+        // 文档内容只读
+        previewOnly.value = true
+      } else {
+        drawerWidth.value = '30%'
+        isBlogMenuShow.value = true
+        previewOnly.value = false
+      }
+    }
+
     const {
+      // 当前markdown文件数据
       fileData,
+      // 文档类别
       category
     } = toRefs(props)
-    // 当markdown文件数据改变时，获取文档内容
+
+    // 获取文档内容
     watch(fileData, (newValue) => {
       oldText.value = newValue.text ? newValue.text : ''
       text.value = newValue.text ? newValue.text : ''
     })
+
     // 树形结构配置项
     const treeProps = reactive({
       children: 'children',
       label: 'name'
     })
+
     // 当前节点
     const currentNode = ref({
       id: '',
       parentId: '',
       name: '',
-      type: ''
+      type: '',
+      children: []
     })
+
     // 文章原始内容
     const oldText = ref('')
     // 当前文章内容
     const text = ref('')
-    // 点击节点
+    // 点击目录节点
     const handleNodeClick = (data) => {
+      // 文档内容改变，打开是否保存当前文档内容的提示框
       if (oldText.value !== text.value) {
         open(data)
       } else {
+        // 更改节点
         changeOtherNode(data)
       }
     }
@@ -292,6 +315,31 @@ export default {
         }
       })
     }
+    // 删除图标
+    const deleteIcon = Delete
+    const deleteByNodeId = () => {
+      if (!currentNode.value.id) return ElMessage.warning('请选择将要删除的目录节点！')
+      let hasChildren = false
+      if (currentNode.value.children && currentNode.value.children.length !== 0) {
+        hasChildren = true
+      }
+      ElMessageBox.confirm(
+        hasChildren ? '当前目录节点下存在子节点，是否继续删除？' : '是否删除？',
+        '提示',
+        {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        emit('deleteById', currentNode)
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消删除！'
+        })
+      })
+    }
     return {
       currentNode,
       treeProps,
@@ -309,7 +357,9 @@ export default {
       catalogueRules,
       cancelCreateCatalogue,
       submitCreateCatalogue,
-      catalogueFormRef
+      catalogueFormRef,
+      deleteIcon,
+      deleteByNodeId
     }
   }
 }
@@ -326,19 +376,28 @@ export default {
     top: 25%;
     z-index: 2023;
   }
+
   // 下拉菜单样式
   .el-dropdown-link {
     display: flex;
     align-items: center;
   }
 
-  // markdown编辑器样式
+  // 暗色主题markdown编辑器样式
   .md-dark {
     height: 100%;
   }
-
+  // 亮色主题markdown编辑器样式
   .md {
     height: 100%;
+  }
+  // 操作列表样式
+  .operation-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 10px;
   }
 }
 </style>

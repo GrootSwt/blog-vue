@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from '@/utils/request'
+import { deleteRequest, getRequest, postRequest } from '@/utils/request'
 
 const BASE_URL = '/catalogue'
 
@@ -10,4 +10,9 @@ export function getBlogCatalogueTree (category) {
 export function createCatalogue (data) {
   const url = BASE_URL + '/createCatalogue'
   return postRequest(url, data)
+}
+
+export function deleteByIdArr (data) {
+  const url = BASE_URL + `/${data.category}/deleteByIdArr?idArr=${data.idArr}`
+  return deleteRequest(url)
 }
