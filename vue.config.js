@@ -1,11 +1,14 @@
 module.exports = {
-  configureWebpack: {
-    externals: {
-      vue: 'Vue',
-      'vue-router': 'VueRouter',
-      vuex: 'Vuex',
-      'element-plus': 'ElementPlus',
-      axios: 'axios'
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      // 生产环境配置项
+      config.externals = {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+        vuex: 'Vuex',
+        'element-plus': 'ElementPlus',
+        axios: 'axios'
+      }
     }
   },
   devServer: {
