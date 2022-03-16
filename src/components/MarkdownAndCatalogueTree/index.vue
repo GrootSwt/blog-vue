@@ -34,8 +34,6 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button type="danger" size="small" :icon="deleteIcon" circle @click="deleteByNodeId">
-          </el-button>
         </div>
       </template>
       <template #default>
@@ -51,7 +49,17 @@
               <document v-else/>
             </el-icon>
             &nbsp;
-            <span>{{ node.label }}</span>
+            <el-dropdown trigger="contextmenu" placement="bottom-start">
+              <span class="el-dropdown-link">
+                {{ node.label }}
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>修改</el-dropdown-item>
+                  <el-dropdown-item  @click="deleteByNodeId(data)">删除</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-tree>
       </template>
@@ -84,7 +92,7 @@
         :rules="catalogueRules"
       >
         <el-form-item label="目录名称" prop="name">
-          <el-input v-model="catalogue.name"></el-input>
+          <el-input v-model="catalogue.name" @keyup.enter="submitCreateCatalogue"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -317,10 +325,10 @@ export default {
     }
     // 删除图标
     const deleteIcon = Delete
-    const deleteByNodeId = () => {
-      if (!currentNode.value.id) return ElMessage.warning('请选择将要删除的目录节点！')
+    const deleteByNodeId = (data) => {
+      if (!data.id) return ElMessage.warning('请选择将要删除的目录节点！')
       let hasChildren = false
-      if (currentNode.value.children && currentNode.value.children.length !== 0) {
+      if (data.children && data.children.length !== 0) {
         hasChildren = true
       }
       ElMessageBox.confirm(
@@ -332,7 +340,7 @@ export default {
           type: 'warning'
         }
       ).then(() => {
-        emit('deleteById', currentNode)
+        emit('deleteById', data)
       }).catch(() => {
         ElMessage({
           type: 'info',

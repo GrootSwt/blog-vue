@@ -59,16 +59,20 @@ export default {
     // 新增目录
     const create = async (catalogue) => {
       const res = await createCatalogue(catalogue)
+      if (res.status !== 'success') {
+        return ElMessage.error('创建目录失败！')
+      }
       data.value = res.data
       markdownAndCatalogueTreeRef.value.cancelCreateCatalogue()
+      ElMessage.success('创建目录成功！')
     }
     // 删除目录
     const deleteById = async (currentNode) => {
       const idArr = []
-      getPropListFromTree(currentNode.value, idArr, 'id', 'children')
+      getPropListFromTree(currentNode, idArr, 'id', 'children')
       const res = await deleteByIdArr({
         idArr,
-        category: currentNode.value.category
+        category: currentNode.category
       })
       if (res.status !== 'success') {
         return ElMessage.error('删除操作失败！')
