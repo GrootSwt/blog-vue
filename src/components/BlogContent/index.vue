@@ -6,7 +6,7 @@
     :category="category"
     @saveFile="saveFile"
     @getFileData="getFileData"
-    @create="create"
+    @editCatalogue="createOrModifyCatalogue"
     @deleteById="deleteById"
   ></markdown-and-catalogue-tree>
 </template>
@@ -14,7 +14,7 @@
 <script>
 import MarkdownAndCatalogueTree from '@/components/MarkdownAndCatalogueTree'
 import { onMounted, ref, toRefs } from 'vue'
-import { getBlogCatalogueTree, createCatalogue, deleteByIdArr } from '@/api/blogCatalogue'
+import { getBlogCatalogueTree, deleteByIdArr, editCatalogue } from '@/api/blogCatalogue'
 import { getByFileId, updateText } from '@/api/blogContent'
 import { ElMessage } from 'element-plus'
 import { getPropListFromTree } from '@/utils'
@@ -57,14 +57,14 @@ export default {
     // 子级组件目录列表和md编辑器引用
     const markdownAndCatalogueTreeRef = ref(null)
     // 新增目录
-    const create = async (catalogue) => {
-      const res = await createCatalogue(catalogue)
+    const createOrModifyCatalogue = async (catalogue) => {
+      const res = await editCatalogue(catalogue)
       if (res.status !== 'success') {
-        return ElMessage.error('创建目录失败！')
+        return ElMessage.error(catalogue.id ? '修改目录失败！' : '创建目录失败！')
       }
       data.value = res.data
-      markdownAndCatalogueTreeRef.value.cancelCreateCatalogue()
-      ElMessage.success('创建目录成功！')
+      markdownAndCatalogueTreeRef.value.cancelEditCatalogue()
+      ElMessage.success(catalogue.id ? '修改目录成功！' : '创建目录成功！')
     }
     // 删除目录
     const deleteById = async (currentNode) => {
@@ -86,7 +86,7 @@ export default {
       fileData,
       saveFile,
       getFileData,
-      create,
+      createOrModifyCatalogue,
       markdownAndCatalogueTreeRef,
       deleteById
     }

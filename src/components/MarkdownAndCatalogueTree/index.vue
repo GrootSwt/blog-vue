@@ -17,12 +17,12 @@
       direction="ltr"
       :size="drawerWidth"
     >
+      <!--操作下拉列表-->
       <template #title>
         <div class="operation-list" v-show="isBlogMenuShow">
           <el-dropdown>
           <span class="el-dropdown-link">
-            <el-icon :size="20"><circle-plus/></el-icon>
-            &nbsp;
+            <el-icon :size="20"><circle-plus/></el-icon>&nbsp;
             <span>新建到此处</span>
           </span>
             <template #dropdown>
@@ -36,6 +36,7 @@
           </el-dropdown>
         </div>
       </template>
+      <!--树形目录-->
       <template #default>
         <el-tree
           :data="treeList"
@@ -55,7 +56,7 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item>修改</el-dropdown-item>
+                  <el-dropdown-item @click="modifyCatalogue(data)">修改</el-dropdown-item>
                   <el-dropdown-item  @click="deleteByNodeId(data)">删除</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -79,12 +80,12 @@
       @on-save="saveFile"
     >
     </md-editor>
-    <!--创建新目录-->
+    <!--编辑目录（新增或修改）-->
     <el-dialog
-      v-model="createCatalogueFlag"
-      title="新建目录"
+      v-model="editCatalogueFlag"
+      :title="editStatus === '1' ? '新增目录' : '修改目录'"
       width="30%"
-      :before-close="cancelCreateCatalogue"
+      :before-close="cancelEditCatalogue"
     >
       <el-form
         ref="catalogueFormRef"
@@ -92,14 +93,14 @@
         :rules="catalogueRules"
       >
         <el-form-item label="目录名称" prop="name">
-          <el-input v-model="catalogue.name" @keyup.enter="submitCreateCatalogue"></el-input>
+          <el-input v-model="catalogue.name" @keyup.enter="submitEditCatalogue"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
-        <el-button @click="cancelCreateCatalogue">取消</el-button>
-        <el-button type="primary" @click="submitCreateCatalogue">
-          创建
+        <el-button @click="cancelEditCatalogue">取消</el-button>
+        <el-button type="primary" @click="submitEditCatalogue">
+          {{ editStatus === '1' ? '新增' : '修改' }}
         </el-button>
       </span>
       </template>
@@ -110,7 +111,7 @@
 <script>
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-import { reactive, ref, toRefs, watch } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { Folder, Document, CirclePlus, FolderOpened, Delete } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
@@ -254,9 +255,14 @@ export default {
     }
     // 新建目录
     const catalogue = ref({
+      id: '',
       type: '',
       parentId: '',
       name: ''
+    })
+    // 新增或修改状态
+    const editStatus = computed(() => {
+      return catalogue.value.id ? '2' : '1'
     })
     const catalogueRules = ref({
       name: [
@@ -274,7 +280,7 @@ export default {
       ]
     })
     // 新建目录对话框标志位
-    const createCatalogueFlag = ref(false)
+    const editCatalogueFlag = ref(false)
     // 打开新建目录对话框
     const createCatalogue = (createType) => {
       const { parentId: currentParentId } = currentNode.value
@@ -301,22 +307,28 @@ export default {
           catalogue.value.type = '1'
           break
       }
-      createCatalogueFlag.value = true
+      editCatalogueFlag.value = true
     }
-    const cancelCreateCatalogue = () => {
+    // 打开修改目录对话框
+    const modifyCatalogue = (data) => {
+      catalogue.value = data
+      editCatalogueFlag.value = true
+    }
+    const cancelEditCatalogue = () => {
+      catalogue.value.id = ''
       catalogue.value.parentId = ''
       catalogue.value.type = ''
       catalogue.value.name = ''
-      createCatalogueFlag.value = false
+      editCatalogueFlag.value = false
     }
     // TODO 提交表单和表单校验
     const catalogueFormRef = ref(null)
-    const submitCreateCatalogue = () => {
+    const submitEditCatalogue = () => {
       catalogueFormRef.value.validate(valid => {
         if (!valid) {
           ElMessage.warning('请根据表单提示完善表单！')
         } else {
-          emit('create', {
+          emit('editCatalogue', {
             category: category.value,
             ...catalogue.value
           })
@@ -360,11 +372,13 @@ export default {
       text,
       previewOnly,
       createCatalogue,
-      createCatalogueFlag,
+      modifyCatalogue,
+      editCatalogueFlag,
+      editStatus,
       catalogue,
       catalogueRules,
-      cancelCreateCatalogue,
-      submitCreateCatalogue,
+      cancelEditCatalogue,
+      submitEditCatalogue,
       catalogueFormRef,
       deleteIcon,
       deleteByNodeId

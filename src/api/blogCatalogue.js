@@ -7,8 +7,8 @@ export function getBlogCatalogueTree (category) {
   return getRequest(url)
 }
 
-export function createCatalogue (data) {
-  const url = BASE_URL + '/createCatalogue'
+export function editCatalogue (data) {
+  const url = BASE_URL + '/editCatalogue'
   return postRequest(url, data)
 }
 
