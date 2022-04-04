@@ -18,11 +18,6 @@ const routes = [
         component: () => import('../views/Java')
       },
       {
-        path: '/java-script',
-        name: 'JavaScript',
-        component: () => import('../views/JavaScript')
-      },
-      {
         path: '/spring',
         name: 'Spring',
         component: () => import('../views/Spring')
@@ -38,9 +33,24 @@ const routes = [
         component: () => import('../views/CSS')
       },
       {
+        path: '/java-script',
+        name: 'JavaScript',
+        component: () => import('../views/JavaScript')
+      },
+      {
+        path: '/type-script',
+        name: 'TypeScript',
+        component: () => import('../views/TypeScript')
+      },
+      {
         path: '/vue',
         name: 'VUE',
         component: () => import('../views/VUE')
+      },
+      {
+        path: '/react',
+        name: 'React',
+        component: () => import('../views/React')
       }
     ]
   }

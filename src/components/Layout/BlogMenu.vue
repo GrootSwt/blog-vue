@@ -51,9 +51,9 @@ export default {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  width: 50%;
+  width: 80%;
   height: 100%;
-  margin-left: 25%;
+  margin-left: 10%;
   // 菜单项
   .blog-menu-item {
     color: var(--blog-menu-item);

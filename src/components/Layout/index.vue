@@ -35,16 +35,24 @@ export default {
         path: '/html'
       },
       {
-        name: 'JavaScript',
-        path: '/java-script'
-      },
-      {
         name: 'CSS',
         path: '/css'
       },
       {
+        name: 'JavaScript',
+        path: '/java-script'
+      },
+      {
+        name: 'TypeScript',
+        path: '/type-script'
+      },
+      {
         name: 'VUE',
         path: '/vue'
+      },
+      {
+        name: 'React',
+        path: '/react'
       }
     ])
     return {
