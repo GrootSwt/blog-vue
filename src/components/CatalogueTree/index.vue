@@ -22,7 +22,6 @@
           <el-dropdown>
           <span class="el-dropdown-link">
             <el-icon :size="20"><circle-plus/></el-icon>&nbsp;
-            <span>新建到此处</span>
           </span>
             <template #dropdown>
               <el-dropdown-menu>
@@ -287,6 +286,7 @@ export default {
   .el-dropdown-link {
     display: flex;
     align-items: center;
+    cursor: pointer;
   }
 
   // 操作列表样式
