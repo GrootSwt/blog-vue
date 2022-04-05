@@ -16,3 +16,16 @@ export function deleteByIdArr (data) {
   const url = BASE_URL + `/${data.category}/deleteByIdArr?idArr=${data.idArr}`
   return deleteRequest(url)
 }
+
+export function getNewest (category = '') {
+  let url = BASE_URL + '/getNewest'
+  if (category) {
+    url += `?category=${category}`
+  }
+  return getRequest(url)
+}
+
+export function getById (id) {
+  const url = BASE_URL + `/${id}/getById`
+  return getRequest(url)
+}
