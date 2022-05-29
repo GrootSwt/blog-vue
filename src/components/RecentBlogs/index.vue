@@ -42,6 +42,7 @@ export default {
   .recent-blog-card {
     cursor: pointer;
     width: 40%;
+    margin-bottom: 10px;
     .blog-category-time {
       display: flex;
       justify-content: space-between;

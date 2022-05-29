@@ -1,25 +1,14 @@
 <template>
-  <blog-content :category="category"></blog-content>
+  <BlogContent :category="category"></BlogContent>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import BlogContent from '@/components/BlogContent'
 
-export default {
-  name: 'TypeScript',
-  components: {
-    BlogContent
-  },
-  setup () {
-    const category = ref('TypeScript')
-    return {
-      category
-    }
-  }
-}
+const category = ref('TypeScript')
+
 </script>
 
 <style scoped>
-
 </style>
