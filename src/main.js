@@ -8,6 +8,6 @@ import '@/assets/theme/white-theme.css'
 
 const app = createApp(App)
 app.use(ElementPlus)
-app.use(store)
 app.use(router)
+app.use(store)
 app.mount('#app')

@@ -1,12 +1,11 @@
 <template>
-  <BlogContent :category="category"></BlogContent>
+  <BlogContent :category="route.query.category"></BlogContent>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import BlogContent from '@/components/BlogContent'
-
-const category = ref('Java')
+import { useRoute } from 'vue-router'
+const route = useRoute()
 </script>
 
 <style scoped>

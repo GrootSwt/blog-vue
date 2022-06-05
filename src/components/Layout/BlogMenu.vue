@@ -1,50 +1,35 @@
 <template>
   <div class="blog-menu-list">
-    <el-link
-      class="blog-menu-item"
-      :class="{'active-item' : activePath === menu.path}"
-      :underline="false"
-      v-for="menu in menuList"
-      :key="menu.name"
-      @click="toMenuPage(menu.path)"
-    >
+    <el-link class="blog-menu-item" :class="{ 'active-item': activePath === menu.path }" :underline="false"
+      v-for="menu in menuList" :key="menu.name" @click="toMenuPage(menu.path, menu.name)">
       {{ menu.name }}
     </el-link>
   </div>
 </template>
 
-<script>
+<script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
 
-export default {
-  name: 'BlogMenu',
-  props: {
-    menuList: {
-      type: Array
-    }
-  },
-  setup () {
-    // 当前路由显示
-    const activePath = ref('')
-    const $route = useRoute()
-    watch($route, (v) => {
-      activePath.value = v.fullPath
-    })
-    // 路由跳转
-    const router = useRouter()
-    const toMenuPage = (path) => {
-      router.push({ path })
-    }
-    return {
-      toMenuPage,
-      activePath
-    }
+defineProps({
+  menuList: {
+    type: Array
   }
+})
+// 当前路由显示
+const activePath = ref('')
+const $route = useRoute()
+watch($route, (v) => {
+  activePath.value = v.fullPath
+})
+// 路由跳转
+const router = useRouter()
+const toMenuPage = (path, name) => {
+  router.push({ path, query: { category: name } })
 }
 </script>
 
-<style scoped lang="less">
+<style lang="scss" scoped>
 // 菜单列表
 .blog-menu-list {
   display: flex;
@@ -54,6 +39,7 @@ export default {
   width: 80%;
   height: 100%;
   margin-left: 10%;
+
   // 菜单项
   .blog-menu-item {
     color: var(--blog-menu-item);
@@ -77,5 +63,4 @@ export default {
     margin-left: 0;
   }
 }
-
 </style>

@@ -25,7 +25,8 @@ const showRecentBlog = (currentBlog) => {
     router.push({
       path: categories[0].path,
       query: {
-        id: currentBlog.id
+        id: currentBlog.id,
+        category: currentBlog.category
       }
     })
   }

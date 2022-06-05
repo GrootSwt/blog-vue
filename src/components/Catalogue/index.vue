@@ -9,7 +9,7 @@
     <!--抽屉文件列表-->
     <el-drawer v-model="catalogueTreeVisible" direction="ltr">
       <!--操作下拉列表-->
-      <template #title>
+      <template #header>
         <div class="operation-list">
           <el-dropdown>
             <span class="el-dropdown-link">
@@ -74,8 +74,8 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs, defineProps, defineEmits } from 'vue'
-import { CirclePlus, FolderOpened, Folder } from '@element-plus/icons-vue'
+import { computed, ref, toRefs } from 'vue'
+import { CirclePlus, FolderOpened, Folder, Document } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const props = defineProps({
@@ -86,7 +86,7 @@ const props = defineProps({
   // 当前节点
   currentNode: Object
 })
-const emit = defineEmits(['nodeClick', 'previewBlog', 'deleteById'])
+const emit = defineEmits(['nodeClick', 'previewBlog', 'deleteById', 'createOrModifyCatalogue'])
 // 目录抽屉控制位
 const catalogueTreeVisible = ref(false)
 // 目录树配置
@@ -215,9 +215,17 @@ const cancelEditCatalogue = () => {
   catalogue.value.name = ''
   editCatalogueFlag.value = false
 }
+const hiddenCatalogueTree = () => {
+  hiddenCatalogueTree.value = false
+}
+
+defineExpose({
+  cancelEditCatalogue,
+  hiddenCatalogueTree
+})
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .catalogue-tree {
 
   // 抽屉展开按钮样式

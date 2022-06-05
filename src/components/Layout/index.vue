@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header>
-      <blog-menu :menuList="menuList"></blog-menu>
+      <BlogMenu :menuList="state.routeTree"></BlogMenu>
     </el-header>
     <el-main>
       <router-view></router-view>
@@ -9,61 +9,17 @@
   </el-container>
 </template>
 
-<script>
-import { reactive } from 'vue'
+<script setup>
+import { onMounted } from 'vue'
 import BlogMenu from '@/components/Layout/BlogMenu'
-
-export default {
-  name: 'Layout',
-  components: { BlogMenu },
-  setup () {
-    const menuList = reactive([
-      {
-        name: 'Home',
-        path: '/home'
-      },
-      {
-        name: 'Java',
-        path: '/java'
-      },
-      {
-        name: 'Spring',
-        path: '/spring'
-      },
-      {
-        name: 'HTML',
-        path: '/html'
-      },
-      {
-        name: 'CSS',
-        path: '/css'
-      },
-      {
-        name: 'JavaScript',
-        path: '/java-script'
-      },
-      {
-        name: 'TypeScript',
-        path: '/type-script'
-      },
-      {
-        name: 'VUE',
-        path: '/vue'
-      },
-      {
-        name: 'React',
-        path: '/react'
-      }
-    ])
-    return {
-      menuList
-    }
-  }
-}
+import { useStore } from 'vuex'
+const { state, dispatch } = useStore()
+onMounted(async () => {
+  dispatch('getRouteTree')
+})
 </script>
 
-<style scoped lang="less">
-
+<style lang="scss" scoped>
 .el-container {
   height: 100%;
 

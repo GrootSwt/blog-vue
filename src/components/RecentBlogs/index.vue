@@ -35,7 +35,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .recent-blog {
   overflow: auto;
   padding: 20px 0 0 20px;
@@ -43,6 +43,7 @@ export default {
     cursor: pointer;
     width: 40%;
     margin-bottom: 10px;
+    min-width: 480px;
     .blog-category-time {
       display: flex;
       justify-content: space-between;

@@ -1,9 +1,9 @@
 <template>
   <div class="blog-content">
     <!--目录-->
-    <CatalogueTree :category="category" :tree-list="catalogueTree" :current-node="currentNode" @nodeClick="nodeClick"
+    <Catalogue :category="category" :treeList="catalogueTree" :currentNode="currentNode" @nodeClick="nodeClick"
       @previewBlog="previewBlog" @createOrModifyCatalogue="createOrModifyCatalogue" @deleteById="deleteById"
-      ref="catalogueTreeRef"></CatalogueTree>
+      ref="catalogueTreeRef"></Catalogue>
     <!--最近博客列表-->
     <RecentBlogs :recent-blogs="recentBlogs" @showRecentBlog="showRecentBlog" v-show="recentShowFlag"></RecentBlogs>
     <!--markdown编辑器-->
@@ -13,15 +13,31 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs, defineProps } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getNewest, getBlogCatalogueTree, deleteByIdArr, editCatalogue, getById } from '@/api/blogCatalogue'
 import { getByFileId, updateText } from '@/api/blogContent'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { getPropListFromTree } from '@/utils'
+import Catalogue from '@/components/Catalogue'
 import Markdown from '@/components/Markdown'
-import CatalogueTree from '@/components/CatalogueTree'
 import RecentBlogs from '@/components/RecentBlogs'
+
+const getRecentBlogs = async (category) => {
+  const res2 = await getNewest(category)
+  recentBlogs.value = res2.data
+}
+
+const getBlogCatalogue = async (category) => {
+  const res2 = await getNewest(category)
+  recentBlogs.value = res2.data
+}
+
+const getCurrentNode = async (id) => {
+  const res = await getById(route.query.id)
+  currentNode.value = res.data
+  await getFileData(route.query.id)
+}
 
 const props = defineProps({
   category: {
@@ -30,6 +46,16 @@ const props = defineProps({
 })
 // 文档类别
 const { category } = toRefs(props)
+watch(category, async (value) => {
+  currentNode.value = []
+  if (route.query.id) {
+    await getCurrentNode(route.query.id)
+  }
+  // 获取最近编辑的博客
+  await getRecentBlogs(value)
+  // 获取目录列表
+  getBlogCatalogue(value)
+})
 // 目录列表
 const catalogueTree = ref([])
 // 当前目录节点
@@ -42,7 +68,7 @@ const currentNode = ref({
 })
 // 最近博客列表是否展示控制位
 const recentShowFlag = computed(() => {
-  return !currentNode.value.id && currentNode.value.id === ''
+  return !currentNode.value.id
 })
 const recentBlogs = ref([])
 const showRecentBlog = (currentBlog) => {
@@ -52,7 +78,7 @@ const showRecentBlog = (currentBlog) => {
   })
 }
 // md编辑器引用
-const markdownRef = ref(null)
+const markdownRef = ref()
 // 目录节点点击
 const nodeClick = (data) => {
   currentNode.value = data
@@ -108,16 +134,12 @@ const fileData = ref({
 const route = useRoute()
 onMounted(async () => {
   if (route.query.id) {
-    const res = await getById(route.query.id)
-    currentNode.value = res.data
-    await getFileData(route.query.id)
+    await getCurrentNode(route.query.id)
   }
   // 获取最近编辑的博客
-  const res2 = await getNewest(category.value)
-  recentBlogs.value = res2.data
+  await getRecentBlogs(category.value)
   // 获取目录列表
-  const res3 = await getBlogCatalogueTree(category.value)
-  catalogueTree.value = res3.data
+  await getBlogCatalogue(category.value)
 })
 // 保存文档内容
 const saveFile = async (text) => {
@@ -136,10 +158,9 @@ const getFileData = async (id) => {
     return ElMessage.error('获取博客内容失败！')
   }
   fileData.value = res.data
-  // ElMessage.success('获取博客内容成功！')
 }
 // 目录引用
-const catalogueTreeRef = ref(null)
+const catalogueTreeRef = ref()
 // 新增目录
 const createOrModifyCatalogue = async (catalogue) => {
   const res = await editCatalogue(catalogue)
@@ -148,25 +169,30 @@ const createOrModifyCatalogue = async (catalogue) => {
   }
   catalogueTree.value = res.data
   catalogueTreeRef.value.cancelEditCatalogue()
+  await getRecentBlogs(category.value)
   ElMessage.success(catalogue.id ? '修改目录成功！' : '创建目录成功！')
 }
 // 删除目录
-const deleteById = async (currentNode) => {
+const deleteById = async (cNode) => {
   const idArr = []
-  getPropListFromTree(currentNode, idArr, 'id', 'children')
+  getPropListFromTree(cNode, idArr, 'id', 'children')
   const res = await deleteByIdArr({
     idArr,
-    category: currentNode.category
+    category: cNode.category
   })
   if (res.status !== 'success') {
     return ElMessage.error('删除失败！')
   }
   catalogueTree.value = res.data
+  await getRecentBlogs(category.value)
+  if (idArr.indexOf(currentNode.value.id) !== -1) {
+    currentNode.value = {}
+  }
   ElMessage.success('删除成功！')
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .blog-content {
   height: 100%;
 }
