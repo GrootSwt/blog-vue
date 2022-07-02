@@ -29,8 +29,8 @@ const getRecentBlogs = async (category) => {
 }
 
 const getBlogCatalogue = async (category) => {
-  const res2 = await getNewest(category)
-  recentBlogs.value = res2.data
+  const res2 = await getBlogCatalogueTree(category)
+  catalogueTree.value = res2.data
 }
 
 const getCurrentNode = async (id) => {
