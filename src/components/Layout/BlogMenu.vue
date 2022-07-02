@@ -11,7 +11,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
 
-defineProps({
+const props = defineProps({
   menuList: {
     type: Array
   }
@@ -20,8 +20,8 @@ defineProps({
 const activePath = ref('')
 const $route = useRoute()
 watch($route, (v) => {
-  activePath.value = v.fullPath
-})
+  activePath.value = v.path
+}, { immediate: true })
 // 路由跳转
 const router = useRouter()
 const toMenuPage = (path, name) => {
