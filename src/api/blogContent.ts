@@ -1,21 +1,23 @@
-import { getRequest, putRequest } from '../utils/request'
+import { getRequest, IResponse, putRequest } from '../utils/request'
+import IBaseBean from './base';
 
 const BASE_URL = '/content'
 
-export interface IBlogContent {
-  id: string;
+export interface IBlogContent extends IBaseBean {
   fileId: string;
   text: string;
-  createTime: Date;
-  lastUpdateTime: Date;
 }
 
-export function getByFileId (fileId: string) {
+export interface IBlogContentData extends IResponse {
+  data: IBlogContent;
+}
+
+export function getByFileId (fileId: string): Promise<IBlogContentData> {
   const url = BASE_URL + `/${fileId}/getByFileId`
-  return getRequest(url)
+  return getRequest(url) as Promise<IBlogContentData>
 }
 
-export function updateText (data: IBlogContent) {
+export function updateText (data: IBlogContent): Promise<IBlogContentData>{
   const url = BASE_URL + '/updateText'
-  return putRequest(url, data)
+  return putRequest(url, data) as Promise<IBlogContentData>
 }

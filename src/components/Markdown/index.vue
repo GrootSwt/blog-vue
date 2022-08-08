@@ -9,16 +9,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { ref, toRefs, watch } from 'vue'
+import { IBlogContent } from '../../api/blogContent';
 
-const props = defineProps({
+const props = defineProps<{
   // 文档内容
-  fileData: Object,
-  previewOnly: Boolean
-})
+  fileData: IBlogContent,
+  previewOnly: boolean
+}>()
 const emit = defineEmits(['saveFile'])
 const { fileData } = toRefs(props)
 // 获取文档内容

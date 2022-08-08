@@ -12,26 +12,16 @@
   </div>
 </template>
 
-<script>
-import { formatTime } from '@/utils'
-
-export default {
-  name: 'RecentBlogs',
-  props: {
-    recentBlogs: Array
-  },
-  setup (props, { emit }) {
-    const formatTimeToStr = (time) => {
-      return formatTime(time)
-    }
-    const showRecentBlog = (currentBlog) => {
-      emit('showRecentBlog', currentBlog)
-    }
-    return {
-      formatTimeToStr,
-      showRecentBlog
-    }
-  }
+<script setup lang="ts">
+import { IBlogCatalogue } from '../../api/blogCatalogue';
+import { formatTime } from '../../utils/index'
+defineProps<{recentBlogs: Array<IBlogCatalogue>}>()
+const emit = defineEmits(['showRecentBlog'])
+const formatTimeToStr = (time?: number) => {
+  return time ? formatTime(time) : ''
+}
+const showRecentBlog = (currentBlog: IBlogCatalogue) => {
+  emit('showRecentBlog', currentBlog)
 }
 </script>
 
@@ -39,15 +29,18 @@ export default {
 .recent-blog {
   overflow: auto;
   padding: 20px 0 0 20px;
+
   .recent-blog-card {
     cursor: pointer;
     width: 40%;
     margin-bottom: 10px;
     min-width: 480px;
+
     .blog-category-time {
       display: flex;
       justify-content: space-between;
     }
+
     .blog-title {
       overflow: hidden;
       white-space: nowrap;

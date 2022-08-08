@@ -9,10 +9,14 @@ interface IData {
   [prop: string]: any;
 }
 
+export enum ResponseStatus {
+  SUCCESS = 'success',
+  FAILURE = 'failure'
+}
+
 export interface IResponse {
-  status: string;
+  status: ResponseStatus;
   message: string;
-  data?: any;
 }
 
 export function getRequest (url: string, data: IData = {}): Promise<IResponse> {

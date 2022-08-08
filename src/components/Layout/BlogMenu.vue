@@ -7,13 +7,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
+import { IBlogRoute } from '../../api/blogRoute';
 
 const props = defineProps({
   menuList: {
-    type: Array
+    type: Array<IBlogRoute>
   }
 })
 // 当前路由显示
@@ -24,7 +25,7 @@ watch($route, (v) => {
 }, { immediate: true })
 // 路由跳转
 const router = useRouter()
-const toMenuPage = (path, name) => {
+const toMenuPage = (path: string, name: string) => {
   router.push({ path, query: { category: name } })
 }
 </script>

@@ -4,18 +4,18 @@ const routes = [
   {
     path: '/',
     name: 'Layout',
-    component: () => import('../components/Layout'),
+    component: () => import('../components/Layout/index.vue'),
     redirect: 'home',
     children: [
       {
         path: '/home',
         name: 'home',
-        component: () => import('../views/Home')
+        component: () => import('../views/Home/index.vue')
       },
       {
         path: '/:project',
         name: 'project',
-        component: () => import('../views/Project')
+        component: () => import('../views/Project/index.vue')
       }
     ]
   }

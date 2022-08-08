@@ -1,7 +1,7 @@
-interface IBase {
+interface IBaseBean {
   id: string;
-  createTime: Date;
-  lastUpdateTime: Date;
+  createTime?: number;
+  lastUpdateTime?: number;
 }
 
-export default IBase;
+export default IBaseBean;

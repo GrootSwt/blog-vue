@@ -9,9 +9,9 @@
   </el-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from 'vue'
-import BlogMenu from '@/components/Layout/BlogMenu'
+import BlogMenu from './BlogMenu.vue'
 import { useStore } from 'vuex'
 const { state, dispatch } = useStore()
 onMounted(async () => {

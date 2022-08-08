@@ -1,8 +1,8 @@
 import { getRequest, IResponse } from '../utils/request'
-import Base from './base'
+import IBaseBean from './base'
 const BASE_URL = '/route'
 
-export interface IBlogRoute extends Base{
+export interface IBlogRoute extends IBaseBean{
   parentId: string;
   name: string;
   path: string;
