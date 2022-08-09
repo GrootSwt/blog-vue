@@ -1,14 +1,17 @@
 <template>
   <div class="blog-content">
-    <!--目录-->
-    <Catalogue :category="category" :treeList="catalogueTree" :currentNode="currentNode" @nodeClick="nodeClick"
-      @previewBlog="previewBlog" @createOrModifyCatalogue="createOrModifyCatalogue" @deleteById="deleteById"
+    <div class="catalogue-box">
+      <Catalogue :category="category" :treeList="catalogueTree" :currentNode="currentNode" @nodeClick="nodeClick"
+      @editBlog="editBlog" @createOrModifyCatalogue="createOrModifyCatalogue" @deleteById="deleteById"
       ref="catalogueTreeRef"></Catalogue>
-    <!--最近博客列表-->
-    <RecentBlogs :recent-blogs="recentBlogs" @showRecentBlog="showRecentBlog" v-show="recentShowFlag"></RecentBlogs>
+    </div>
     <!--markdown编辑器-->
-    <markdown v-show="!recentShowFlag" :preview-only="previewOnly" :file-data="fileData" @saveFile="saveFile"
+    <div class="markdown-box" :class="{'recent-show': recentShowFlag}">
+      <!--最近博客列表-->
+      <RecentBlogs :recent-blogs="recentBlogs" @showRecentBlog="showRecentBlog" v-show="recentShowFlag"></RecentBlogs>
+      <markdown v-show="!recentShowFlag" :preview-only="previewOnly" :file-data="fileData" @saveFile="saveFile"
       ref="markdownRef"></markdown>
+    </div>
   </div>
 </template>
 
@@ -82,7 +85,7 @@ const recentBlogs = ref<Array<IBlogCatalogue>>([])
 const showRecentBlog = (currentBlog: IBlogCatalogue) => {
   currentNode.value = currentBlog
   getFileData(currentNode.value.id).then(() => {
-    previewOnly.value = false
+    previewOnly.value = true
   })
 }
 // md编辑器引用
@@ -104,7 +107,7 @@ const nodeClick = (data: IBlogCatalogue) => {
         saveFile(markdownRef.value.getText()).then(() => {
           getFileData(currentNode.value.id).then(() => {
             catalogueTreeRef.value.hiddenCatalogueTree()
-            previewOnly.value = false
+            previewOnly.value = true
           })
         })
       }).catch(() => {
@@ -114,22 +117,22 @@ const nodeClick = (data: IBlogCatalogue) => {
         })
         getFileData(currentNode.value.id).then(() => {
           catalogueTreeRef.value.hiddenCatalogueTree()
-          previewOnly.value = false
+          previewOnly.value = true
         })
       })
     } else {
       getFileData(currentNode.value.id).then(() => {
         catalogueTreeRef.value.hiddenCatalogueTree()
-        previewOnly.value = false
+        previewOnly.value = true
       })
     }
   }
 }
-const previewOnly = ref(false)
-const previewBlog = (data: IBlogCatalogue) => {
+const previewOnly = ref(true)
+const editBlog = (data: IBlogCatalogue) => {
   currentNode.value = data
   getFileData(currentNode.value.id).then(() => {
-    previewOnly.value = true
+    previewOnly.value = false
     catalogueTreeRef.value.hiddenCatalogueTree()
   })
 }
@@ -209,6 +212,22 @@ const deleteById = async (cNode: IBlogCatalogue) => {
 
 <style lang="scss" scoped>
 .blog-content {
+  display: flex;
   height: 100%;
+
+  .catalogue-box {
+    box-sizing: border-box;
+    width: 20%;
+    height: 100%;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .markdown-box {
+    width: 80%;
+    height: 100%;
+  }
+  .recent-show {
+    border-left: 1px solid var(--border-color);
+  }
 }
 </style>

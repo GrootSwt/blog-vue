@@ -1,58 +1,45 @@
 <template>
   <div class="catalogue-tree">
-    <!--菜单打开关闭按钮-->
-    <el-button class="folder-btn" @click="catalogueTreeVisible = !catalogueTreeVisible" circle type="info">
-      <el-icon>
-        <folder-opened />
-      </el-icon>
-    </el-button>
-    <!--抽屉文件列表-->
-    <el-drawer v-model="catalogueTreeVisible" direction="ltr">
-      <!--操作下拉列表-->
-      <template #header>
-        <div class="operation-list">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              <el-icon :size="20">
-                <circle-plus />
-              </el-icon>&nbsp;
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="createCatalogue('1')">同级文档</el-dropdown-item>
-                <el-dropdown-item @click="createCatalogue('2')">同级文件夹</el-dropdown-item>
-                <el-dropdown-item @click="createCatalogue('3')" v-if="currentNode.type === '1'">子级文档</el-dropdown-item>
-                <el-dropdown-item @click="createCatalogue('4')" v-if="currentNode.type === '1'">子级文件夹</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </template>
-      <!--树形目录-->
-      <template #default>
-        <el-tree :data="treeList" :props="treeProps" highlight-current @node-click="nodeClick">
-          <template #default="{ node, data }">
-            <el-icon :size="20">
-              <folder v-if="data.type === '1'" />
-              <document v-else />
-            </el-icon>
-            &nbsp;
-            <el-dropdown trigger="hover" placement="bottom-start">
-              <span class="el-dropdown-link">
-                {{ node.label }}
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item v-if="data.type === '2'" @click="previewBlog(data)">预览模式</el-dropdown-item>
-                  <el-dropdown-item @click="modifyCatalogue(data)">修改目录</el-dropdown-item>
-                  <el-dropdown-item @click="deleteByNodeId(data)">删除博客</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+    <!--操作下拉列表-->
+    <div class="operation-list">
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          <el-icon :size="20">
+            <circle-plus />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="createCatalogue('1')">同级文档</el-dropdown-item>
+            <el-dropdown-item @click="createCatalogue('2')">同级文件夹</el-dropdown-item>
+            <el-dropdown-item @click="createCatalogue('3')" v-if="currentNode.type === '1'">子级文档</el-dropdown-item>
+            <el-dropdown-item @click="createCatalogue('4')" v-if="currentNode.type === '1'">子级文件夹</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+    <!--树形目录-->
+    <el-tree :data="treeList" :props="treeProps" highlight-current @node-click="nodeClick">
+      <template #default="{ node, data }">
+        <el-icon :size="20">
+          <folder v-if="data.type === '1'" />
+          <document v-else />
+        </el-icon>
+        &nbsp;
+        <el-dropdown trigger="hover" placement="bottom-start">
+          <span class="el-dropdown-link">
+            {{ node.label }}
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-if="data.type === '2'" @click="editBlog(data)">编辑模式</el-dropdown-item>
+              <el-dropdown-item @click="modifyCatalogue(data)">修改目录</el-dropdown-item>
+              <el-dropdown-item @click="deleteByNodeId(data)">删除博客</el-dropdown-item>
+            </el-dropdown-menu>
           </template>
-        </el-tree>
+        </el-dropdown>
       </template>
-    </el-drawer>
+    </el-tree>
     <!--编辑目录（新增或修改）-->
     <el-dialog v-model="editCatalogueFlag" :title="editStatus === '1' ? '新增目录' : '修改目录'" width="30%"
       :before-close="cancelEditCatalogue">
@@ -87,7 +74,7 @@ const props = defineProps<{
   // 当前节点
   currentNode: IBlogCatalogue
 }>()
-const emit = defineEmits(['nodeClick', 'previewBlog', 'deleteById', 'createOrModifyCatalogue'])
+const emit = defineEmits(['nodeClick', 'editBlog', 'deleteById', 'createOrModifyCatalogue'])
 // 目录抽屉控制位
 const catalogueTreeVisible = ref(false)
 // 目录树配置
@@ -102,8 +89,8 @@ const nodeClick = (data: IBlogCatalogue) => {
   emit('nodeClick', data)
 }
 // 点击只读按钮
-const previewBlog = (data: IBlogCatalogue) => {
-  emit('previewBlog', data)
+const editBlog = (data: IBlogCatalogue) => {
+  emit('editBlog', data)
 }
 // 删除目录
 const deleteByNodeId = (data: IBlogCatalogue) => {
@@ -228,16 +215,9 @@ defineExpose({
 
 <style lang="scss" scoped>
 .catalogue-tree {
+  height: 100%;
 
-  // 抽屉展开按钮样式
-  .folder-btn {
-    position: absolute;
-    right: 10px;
-    top: 25%;
-    z-index: 2023;
-  }
-
-  // 下拉菜单样式
+// 下拉菜单样式
   .el-dropdown-link {
     display: flex;
     align-items: center;
@@ -250,7 +230,13 @@ defineExpose({
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-right: 10px;
+    height: 43px;
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 20px;
+  }
+
+  .el-tree {
+    margin-top: 20px;
   }
 }
 </style>

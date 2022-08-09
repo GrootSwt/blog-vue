@@ -4,7 +4,7 @@
     <MdEditor v-if="previewOnly" theme="dark" v-model="text" :previewOnly="true">
     </MdEditor>
     <!--markdown编辑器-->
-    <MdEditor v-else v-model="text" @on-save="saveFile">
+    <MdEditor v-else theme="dark" v-model="text" @on-save="saveFile">
     </MdEditor>
   </div>
 </template>
@@ -61,12 +61,6 @@ defineExpose({
 .blog-mark-down {
   height: 100%;
 
-  // 暗色主题markdown编辑器样式
-  .md-dark {
-    height: 100%;
-  }
-
-  // 亮色主题markdown编辑器样式
   .md {
     height: 100%;
   }

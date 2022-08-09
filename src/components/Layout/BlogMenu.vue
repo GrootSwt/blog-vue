@@ -43,17 +43,17 @@ const toMenuPage = (path: string, name: string) => {
 
   // 菜单项
   .blog-menu-item {
-    color: var(--blog-menu-item);
+    color: var(--blog-color);
     transition: color 0.2s;
     font-size: 18px;
   }
 
   .blog-menu-item:hover {
-    color: var(--blog-menu-item-hover);
+    color: var(--blog-menu-item-active);
   }
 
   .active-item {
-    color: var(--blog-menu-item-hover);
+    color: var(--blog-menu-item-active);
   }
 }
 

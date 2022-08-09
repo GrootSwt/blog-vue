@@ -24,13 +24,13 @@ onMounted(async () => {
   height: 100%;
 
   .el-header {
-    background-color: var(--blog-header-bg-color);
+    background-color: var(--blog-bg-color);
     padding: 0;
   }
 
   .el-main {
     padding: 0;
-    background-color: var(--blog-main-bg-color);
+    background-color: var(--blog-bg-color);
   }
 }
 </style>
