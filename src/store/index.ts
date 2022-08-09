@@ -1,17 +1,21 @@
-import { createStore } from 'vuex'
-import { getRouteTree } from '../api/blogRoute'
+import { createStore, Store, useStore } from 'vuex'
+import { getRouteTree, IBlogRoute } from '../api/blogRoute'
 
-export default createStore({
+export interface IState {
+  routeTree: Array<IBlogRoute>;
+}
+
+export default createStore<IState>({
   state: {
     routeTree: []
   },
   mutations: {
-    setRouteTree (state, routeTree) {
+    setRouteTree(state, routeTree) {
       state.routeTree = routeTree
     }
   },
   actions: {
-    async getRouteTree ({ commit }) {
+    async getRouteTree({ commit }) {
       const res = await getRouteTree()
       if (res.status === 'success') {
         commit('setRouteTree', res.data)
@@ -23,3 +27,7 @@ export default createStore({
   modules: {
   }
 })
+
+export function useAppStore(): Store<IState> {
+  return useStore()
+}
