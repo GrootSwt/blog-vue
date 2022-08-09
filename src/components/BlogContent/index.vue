@@ -2,21 +2,21 @@
   <div class="blog-content">
     <div class="catalogue-box">
       <Catalogue :category="category" :treeList="catalogueTree" :currentNode="currentNode" @nodeClick="nodeClick"
-      @editBlog="editBlog" @createOrModifyCatalogue="createOrModifyCatalogue" @deleteById="deleteById"
-      ref="catalogueTreeRef"></Catalogue>
+        @editBlog="editBlog" @createOrModifyCatalogue="createOrModifyCatalogue" @deleteById="deleteById"
+        ref="catalogueTreeRef"></Catalogue>
     </div>
     <!--markdown编辑器-->
-    <div class="markdown-box" :class="{'recent-show': recentShowFlag}">
+    <div class="markdown-box" :class="{ 'recent-show': recentShowFlag }">
       <!--最近博客列表-->
       <RecentBlogs :recent-blogs="recentBlogs" @showRecentBlog="showRecentBlog" v-show="recentShowFlag"></RecentBlogs>
       <markdown v-show="!recentShowFlag" :preview-only="previewOnly" :file-data="fileData" @saveFile="saveFile"
-      ref="markdownRef"></markdown>
+        ref="markdownRef"></markdown>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getNewest, getBlogCatalogueTree, deleteByIdArr, editCatalogue, getById, IBlogCatalogue } from '../../api/blogCatalogue'
@@ -159,7 +159,11 @@ const saveFile = async (text: string) => {
   if (res.status !== 'success') {
     return ElMessage.error('保存失败！')
   }
-  ElMessage.success('保存成功！')
+  ElNotification({
+    message: '保存成功！',
+    type: 'success',
+    position: 'bottom-left'
+  })
   fileData.value = res.data
 }
 // 获取文档内容
@@ -181,7 +185,11 @@ const createOrModifyCatalogue = async (catalogue: IBlogCatalogue) => {
   catalogueTree.value = res.data
   catalogueTreeRef.value.cancelEditCatalogue()
   await getRecentBlogs(category.value)
-  ElMessage.success(catalogue.id ? '修改目录成功！' : '创建目录成功！')
+  ElNotification({
+    message: catalogue.id ? '修改目录成功！' : '创建目录成功！',
+    type: 'success',
+    position: 'bottom-left'
+  })
 }
 // 删除目录
 const deleteById = async (cNode: IBlogCatalogue) => {
@@ -206,7 +214,11 @@ const deleteById = async (cNode: IBlogCatalogue) => {
       children: []
     }
   }
-  ElMessage.success('删除成功！')
+  ElNotification({
+    message: '删除成功！',
+    type: 'success',
+    position: 'bottom-left'
+  })
 }
 </script>
 
@@ -226,6 +238,7 @@ const deleteById = async (cNode: IBlogCatalogue) => {
     width: 80%;
     height: 100%;
   }
+
   .recent-show {
     border-left: 1px solid var(--border-color);
   }
