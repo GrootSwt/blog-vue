@@ -32,7 +32,7 @@ export function getRequest (url: string, data: IData = {}): Promise<IResponse> {
   })
 }
 
-export function postRequest (url: string, data: IData = {}) {
+export function postRequest (url: string, data: IData = {}): Promise<IResponse> {
   return new Promise((resolve, reject) => {
     instance.post(url, data).then(res => {
       const { data } = res
@@ -43,7 +43,7 @@ export function postRequest (url: string, data: IData = {}) {
   })
 }
 
-export function deleteRequest (url: string, data: IData = {}) {
+export function deleteRequest (url: string, data: IData = {}): Promise<IResponse> {
   return new Promise((resolve, reject) => {
     instance.delete(url, {
       params: data
@@ -56,7 +56,7 @@ export function deleteRequest (url: string, data: IData = {}) {
   })
 }
 
-export function putRequest (url: string, data: IData = {}) {
+export function putRequest (url: string, data: IData = {}): Promise<IResponse> {
   return new Promise((resolve, reject) => {
     instance.put(url, data).then(res => {
       const { data } = res

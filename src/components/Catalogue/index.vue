@@ -201,6 +201,7 @@ const cancelEditCatalogue = () => {
   catalogue.value.parentId = ''
   catalogue.value.type = ''
   catalogue.value.name = ''
+  catalogueFormRef.value?.clearValidate()
   editCatalogueFlag.value = false
 }
 const hiddenCatalogueTree = () => {

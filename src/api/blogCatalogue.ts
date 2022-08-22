@@ -12,26 +12,26 @@ export interface IBlogCatalogue extends IBaseBean {
 }
 
 export interface IBlogCatalogueData extends IResponse {
-  data: IBlogCatalogue;
+  data?: IBlogCatalogue;
 }
 
 export interface IBlogCatalogueTreeData extends IResponse {
-  data: Array<IBlogCatalogue>;
+  data?: Array<IBlogCatalogue>;
 }
 
 export function getBlogCatalogueTree (category: string): Promise<IBlogCatalogueTreeData> {
   const url = BASE_URL + `/${category}/getCatalogueTree`
-  return getRequest(url) as Promise<IBlogCatalogueTreeData>
+  return getRequest(url)
 }
 
 export function editCatalogue (data: IBlogCatalogue): Promise<IBlogCatalogueTreeData> {
   const url = BASE_URL + '/editCatalogue'
-  return postRequest(url, data) as Promise<IBlogCatalogueTreeData>
+  return postRequest(url, data)
 }
 
 export function deleteByIdArr (data: { category: string; idArr: Array<string> }): Promise<IBlogCatalogueTreeData> {
   const url = BASE_URL + `/${data.category}/deleteByIdArr?idArr=${data.idArr}`
-  return deleteRequest(url) as Promise<IBlogCatalogueTreeData>
+  return deleteRequest(url)
 }
 
 export function getNewest (category = ''): Promise<IBlogCatalogueTreeData> {
@@ -39,10 +39,10 @@ export function getNewest (category = ''): Promise<IBlogCatalogueTreeData> {
   if (category) {
     url += `?category=${category}`
   }
-  return getRequest(url) as Promise<IBlogCatalogueTreeData>
+  return getRequest(url)
 }
 
 export function getById (id: string): Promise<IBlogCatalogueData> {
   const url = BASE_URL + `/${id}/getById`
-  return getRequest(url) as Promise<IBlogCatalogueData>
+  return getRequest(url)
 }

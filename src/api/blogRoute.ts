@@ -10,8 +10,8 @@ export interface IBlogRoute extends IBaseBean{
 }
 
 export interface IBlogRouteData extends IResponse {
-  data: Array<IBlogRoute>
+  data?: Array<IBlogRoute>
 }
 export function getRouteTree (): Promise<IBlogRouteData> {
-  return getRequest(BASE_URL + '/getRouteTree') as Promise<IBlogRouteData> 
+  return getRequest(BASE_URL + '/getRouteTree')
 }

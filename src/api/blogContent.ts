@@ -9,15 +9,15 @@ export interface IBlogContent extends IBaseBean {
 }
 
 export interface IBlogContentData extends IResponse {
-  data: IBlogContent;
+  data?: IBlogContent;
 }
 
 export function getByFileId (fileId: string): Promise<IBlogContentData> {
   const url = BASE_URL + `/${fileId}/getByFileId`
-  return getRequest(url) as Promise<IBlogContentData>
+  return getRequest(url)
 }
 
 export function updateText (data: IBlogContent): Promise<IBlogContentData>{
   const url = BASE_URL + '/updateText'
-  return putRequest(url, data) as Promise<IBlogContentData>
+  return putRequest(url, data)
 }
